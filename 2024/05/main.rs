@@ -1,4 +1,4 @@
-#[path = "../libs/helper.rs"]
+#[path = "../../libs/helper.rs"]
 mod helper;
 
 fn parse_input(input: Vec<String>) -> (Vec<(i32, i32)>, Vec<Vec<i32>>) {
@@ -39,15 +39,24 @@ fn check_first(ordering_rules: &Vec<(i32, i32)>, first: i32) -> bool {
     }
     return true;
 }
+
 fn check_ordering(ordering_rules: &Vec<(i32, i32)>, first: i32, second: i32) -> bool {
     for rule in ordering_rules {
         let (a, b) = rule;
-        if a == &first && b == &second {
-            return true;
+
+        // if a == &first && b == &second {
+        //     return true;
+        // }
+        if b == &first && a == &second {
+            return false;
         }
-        if
     }
-    return false;
+    return true;
+}
+
+fn get_middle_entry(page: &Vec<i32>) -> i32 {
+    //println!(" adding {}", page[page.len() / 2]);
+    return page[page.len() / 2];
 }
 
 fn main() {
@@ -72,19 +81,53 @@ fn main() {
     }
     */
 
-    let mut correct_pages = 0;
-
+    let mut incorrect_page_inputs: Vec<Vec<i32>> = vec![];
+    let mut correct_page_sum = 0;
     for pages in page_numbers {
-        if !check_first(&ordering_rules, pages[0]) {
-            print!(".");
-            continue;
-        }
-        for i in 1..(pages.len() - 1) {
-            if !check_ordering(&ordering_rules, pages[i], pages[i + 1]) {
+        let mut valid_page = true;
+
+        for n in 0..(pages.len() - 1) {
+            for i in (n + 1)..(pages.len()) {
+                if !check_ordering(&ordering_rules, pages[n], pages[i]) {
+                    valid_page = false;
+                    incorrect_page_inputs.push(pages.clone());
+                    break;
+                }
+            }
+            if !valid_page {
                 break;
             }
         }
-        correct_pages += 1;
+        if valid_page {
+            correct_page_sum += get_middle_entry(&pages);
+        }
     }
-    println!("found {} correct pages", correct_pages);
+    println!("found corrected page sum: {}", correct_page_sum);
+
+    // part 2 - use only incorrect pages, order them by known rules, add middle page
+    // example sum is 123
+
+    let mut incorrect_page_sum = 0;
+
+    for mut pages in incorrect_page_inputs {
+        let mut valid_page = true;
+        for n in 0..(pages.len() -1) {
+            for i in ( (n + 1)..(pages.len())) {
+                if !check_ordering(&ordering_rules, pages[n], pages[i]) {
+                    &pages.swap(n, i);
+                    if !check_ordering(&ordering_rules, pages[n], pages[i]) {
+                        valid_page = false;
+                        break;
+                    }
+                }
+            }
+            if !valid_page{
+                break;
+            }
+        }
+        if valid_page {
+            incorrect_page_sum += get_middle_entry(&pages);
+        }
+    }
+    println!("found incorrected page sum: {}", incorrect_page_sum);
 }

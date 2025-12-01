@@ -1,4 +1,4 @@
-#[path = "../libs/helper.rs"] mod helper;
+#[path = "../../libs/helper.rs"] mod helper;
 
 fn main() {
     let lines = helper::lines_from_file("./input.txt");

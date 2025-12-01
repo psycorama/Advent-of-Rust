@@ -1,4 +1,4 @@
-#[path = "../libs/helper.rs"]
+#[path = "../../libs/helper.rs"]
 mod helper;
 
 fn safety_check(input: &Vec<i32>) -> bool {
